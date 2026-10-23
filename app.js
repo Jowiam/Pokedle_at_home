@@ -155,7 +155,8 @@ async function addGuess(pokemon) {
   const targetHabitat = habitatName(targetSpecies);
   const row = document.createElement("tr");
   row.innerHTML = `
-    <td><span class="pokemon-cell"><img src="${pokemon.sprites.front_default || ""}" alt="" />${titleCase(pokemon.name)}</span></td>
+    <td>${titleCase(pokemon.name)}</td>
+    <td><img class="guess-sprite" src="${pokemon.sprites.front_default || ""}" alt="${titleCase(pokemon.name)}" /></td>
     <td>${generationClue(generation(pokemon.id), generation(state.target.id))}</td>
     <td>${clue(titleCase(firstType), compareType(types[0], targetTypes, 0))}</td>
     <td>${clue(titleCase(secondType), compareType(types[1], targetTypes, 1))}</td>
@@ -225,7 +226,7 @@ async function newGame() {
     state.round += 1;
     localStorage.setItem("pokeguess-round", state.round);
     elements.round.textContent = state.round;
-    elements.guesses.innerHTML = '<tr id="empty-state"><td colspan="7">Forslagene dine vises her.</td></tr>';
+    elements.guesses.innerHTML = '<tr id="empty-state"><td colspan="8">Forslagene dine vises her.</td></tr>';
     elements.input.value = "";
     elements.input.disabled = false;
     elements.button.disabled = false;
