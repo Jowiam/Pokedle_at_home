@@ -69,10 +69,10 @@ function compareNumber(value, target, tolerance) {
   return { kind, direction };
 }
 
-function compareTypes(types, targetTypes) {
-  const matches = types.filter((type) => targetTypes.includes(type)).length;
-  if (matches === targetTypes.length && types.length === targetTypes.length) return "exact";
-  return matches ? "close" : "miss";
+function compareType(type, targetTypes, position) {
+  if (type === targetTypes[position]) return "exact";
+  if (type && targetTypes.includes(type)) return "close";
+  return "miss";
 }
 
 function clue(value, kind) {
@@ -89,13 +89,16 @@ function numberClue(displayValue, comparisonValue, target, tolerance, label) {
 function addGuess(pokemon) {
   const targetTypes = state.target.types.map((entry) => entry.type.name);
   const types = pokemon.types.map((entry) => entry.type.name);
+  const firstType = types[0] || "none";
+  const secondType = types[1] || "none";
   const total = statTotal(pokemon);
   const targetTotal = statTotal(state.target);
   const row = document.createElement("tr");
   row.innerHTML = `
     <td><span class="pokemon-cell"><img src="${pokemon.sprites.front_default || ""}" alt="" />${titleCase(pokemon.name)}</span></td>
     <td>${clue(`Gen ${generation(pokemon.id)}`, generation(pokemon.id) === generation(state.target.id) ? "exact" : "miss")}</td>
-    <td>${clue(types.join(" / "), compareTypes(types, targetTypes))}</td>
+    <td>${clue(titleCase(firstType), compareType(types[0], targetTypes, 0))}</td>
+    <td>${clue(titleCase(secondType), compareType(types[1], targetTypes, 1))}</td>
     <td>${numberClue(`${pokemon.height / 10} m`, pokemon.height, state.target.height, 3, "Height")}</td>
     <td>${numberClue(`${pokemon.weight / 10} kg`, pokemon.weight, state.target.weight, 30, "Weight")}</td>
     <td>${clue(total, compareNumber(total, targetTotal, 40).kind)}</td>`;
@@ -155,7 +158,7 @@ async function newGame() {
     state.round += 1;
     localStorage.setItem("pokeguess-round", state.round);
     elements.round.textContent = state.round;
-    elements.guesses.innerHTML = '<tr id="empty-state"><td colspan="6">Your guesses will appear here.</td></tr>';
+    elements.guesses.innerHTML = '<tr id="empty-state"><td colspan="7">Your guesses will appear here.</td></tr>';
     elements.input.value = "";
     elements.input.disabled = false;
     elements.button.disabled = false;
