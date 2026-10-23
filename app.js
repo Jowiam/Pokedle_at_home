@@ -24,11 +24,21 @@ const elements = {
   streak: document.querySelector("#streak"),
   rounds: document.querySelector("#round-count"),
   newGame: document.querySelector("#new-game"),
+  winBanner: document.querySelector("#win-banner"),
+  winMessage: document.querySelector("#win-message"),
+  winNewGame: document.querySelector("#win-new-game"),
   generationOptions: document.querySelector("#generation-options"),
 };
 
 function titleCase(name) {
   return name.split("-").map((part) => part.charAt(0).toUpperCase() + part.slice(1)).join(" ");
+}
+
+function showWinBanner() {
+  elements.winMessage.textContent = `Du fant ${titleCase(state.target.name)} på ${state.guesses.length} ${state.guesses.length === 1 ? "forsøk" : "forsøk"}!`;
+  elements.winBanner.hidden = false;
+  elements.winBanner.classList.remove("celebrate");
+  requestAnimationFrame(() => elements.winBanner.classList.add("celebrate"));
 }
 
 function setStatus(message, kind = "") {
@@ -232,6 +242,7 @@ async function submitGuess(event) {
     if (pokemon.name === state.target.name) {
       setStatus(`Riktig! Det var ${titleCase(state.target.name)}. Start en ny runde når du vil.`, "success");
       finish(true);
+      showWinBanner();
     } else {
       setStatus("Ikke helt. Bruk ledetrådene for å finne riktig Pokémon.");
       elements.button.disabled = false;
@@ -259,6 +270,8 @@ async function newGame() {
     localStorage.setItem("pokeguess-round", state.round);
     elements.round.textContent = state.round;
     elements.guesses.innerHTML = '<tr id="empty-state"><td colspan="9">Forslagene dine vises her.</td></tr>';
+    elements.winBanner.hidden = true;
+    elements.winBanner.classList.remove("celebrate");
     elements.input.value = "";
     elements.input.disabled = false;
     elements.button.disabled = false;
@@ -288,6 +301,7 @@ async function start() {
 
 elements.form.addEventListener("submit", submitGuess);
 elements.newGame.addEventListener("click", newGame);
+elements.winNewGame.addEventListener("click", newGame);
 elements.generationOptions.addEventListener("change", async () => {
   if (updatePokemonPool()) {
     await newGame();

@@ -45,6 +45,16 @@ button:disabled, input:disabled { cursor: not-allowed; opacity: .55; }
 .status { background: #111a2b; border-radius: 10px; color: var(--muted); margin-top: 22px; padding: 12px 14px; }
 .status.success { color: var(--exact); }
 .status.error { color: #ff8585; }
+.win-banner { background: linear-gradient(135deg, #203b52, #253653); border: 1px solid #3d6781; border-radius: 18px; box-shadow: 0 12px 35px #05081180; margin-top: 16px; overflow: hidden; padding: 22px; position: relative; text-align: center; }
+.win-banner strong, .win-banner span { display: block; position: relative; z-index: 1; }
+.win-banner strong { color: var(--accent); font-size: 1.5rem; margin: 5px 0; }
+.win-banner span:not(.win-emoji) { color: var(--text); margin-bottom: 15px; }
+.win-emoji { font-size: 2.2rem; }
+.win-banner .primary-button { position: relative; z-index: 1; }
+.win-banner.celebrate { animation: win-pop .55s cubic-bezier(.2, 1.4, .4, 1); }
+.confetti::before, .confetti::after { content: "✦  ·  ✧  •  ✦  ·  ✧"; color: var(--accent); font-size: 1.2rem; left: 4%; letter-spacing: 18px; position: absolute; top: 12px; transform: rotate(-8deg); }
+.confetti::after { color: var(--exact); left: auto; right: 4%; top: auto; transform: rotate(8deg); }
+@keyframes win-pop { 0% { opacity: 0; transform: scale(.86) translateY(8px); } 70% { transform: scale(1.03); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
 .generation-filter { border: 1px solid #2a3651; border-radius: 12px; margin: 24px 0 0; padding: 15px; }
 .generation-filter legend { color: var(--muted); font-size: .82rem; font-weight: 700; padding: 0 6px; }
 .generation-options { display: flex; flex-wrap: wrap; gap: 8px; }
