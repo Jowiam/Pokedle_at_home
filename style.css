@@ -23,7 +23,8 @@ body {
 .shell { width: min(960px, calc(100% - 32px)); margin: 0 auto; padding: 54px 0 28px; }
 .hero, .card-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; }
 .eyebrow { color: var(--accent); font-size: .72rem; font-weight: 800; letter-spacing: .16em; margin: 0 0 9px; }
-.logo-button { background: none; border: 0; color: var(--text); cursor: pointer; display: block; font: inherit; font-size: clamp(2.5rem, 7vw, 4.5rem); font-weight: 800; letter-spacing: -.07em; line-height: .9; margin: 0; padding: 0; text-align: left; transition: filter .15s, transform .15s; }
+.logo-button { background: none; border: 0; color: inherit; cursor: pointer; display: block; font: inherit; font-size: inherit; font-weight: inherit; letter-spacing: inherit; line-height: inherit; margin: 0; padding: 0; text-align: left; transition: filter .15s, transform .15s; }
+.hero h1 { font-size: clamp(2.5rem, 7vw, 4.5rem); letter-spacing: -.07em; line-height: .9; margin: 0; }
 .logo-button span:last-child { color: var(--accent); }
 .logo-button:hover { filter: brightness(1.12); transform: translateY(-1px); }
 .logo-button:focus-visible { border-radius: 6px; outline: 3px solid var(--accent); outline-offset: 6px; }
