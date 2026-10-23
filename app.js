@@ -196,6 +196,10 @@ function habitatName(species) {
   return habitatNames[species.habitat?.name] || "Unknown";
 }
 
+function colorName(species) {
+  return titleCase(species.color?.name || "Unknown");
+}
+
 function evolutionStage(chain, pokemonName, stage = 1) {
   if (chain.species.name === pokemonName) return Math.min(stage, 3);
   for (const evolution of chain.evolves_to) {
@@ -256,6 +260,8 @@ async function addGuess(pokemon) {
   const secondType = types[1] || "none";
   const habitat = habitatName(guessSpecies);
   const targetHabitat = habitatName(targetSpecies);
+  const color = colorName(guessSpecies);
+  const targetColor = colorName(targetSpecies);
   const stage = evolutionStage(guessChain.chain, pokemon.name);
   const targetStage = evolutionStage(targetChain.chain, state.target.name);
   const stageComparison = compareNumber(stage, targetStage, 0);
@@ -272,6 +278,7 @@ async function addGuess(pokemon) {
     <td>${clue(titleCase(secondType), compareType(types[1], targetTypes, 1))}</td>
     <td>${numberClue(`${pokemon.height / 10} m`, pokemon.height, state.target.height, 3, "Høyde")}</td>
     <td>${numberClue(`${pokemon.weight / 10} kg`, pokemon.weight, state.target.weight, 30, "Vekt")}</td>
+    <td>${clue(color, color === targetColor ? "exact" : "miss")}</td>
     <td>${clue(habitat, habitat === targetHabitat ? "exact" : "miss")}</td>
     <td><span class="clue ${stageComparison.kind}"${stageDirection}>Stage ${stage}${stageArrow ? `<span class="direction" aria-hidden="true">${stageArrow}</span>` : ""}</span></td>`;
   elements.empty?.remove();
@@ -337,7 +344,7 @@ async function newGame() {
     state.locked = false;
     state.round += 1;
     localStorage.setItem("pokeguess-round", state.round);
-    elements.guesses.innerHTML = '<tr id="empty-state"><td colspan="9">Forslagene dine vises her.</td></tr>';
+    elements.guesses.innerHTML = '<tr id="empty-state"><td colspan="10">Forslagene dine vises her.</td></tr>';
     elements.winBanner.hidden = true;
     elements.winBanner.classList.remove("celebrate");
     elements.input.value = "";
