@@ -95,6 +95,7 @@ function renderSuggestions() {
   const hasSuggestions = state.suggestions.length > 0 && !elements.input.disabled;
   elements.suggestions.hidden = !hasSuggestions;
   elements.input.setAttribute("aria-expanded", String(hasSuggestions));
+  elements.form.classList.toggle("suggestions-open", hasSuggestions);
 }
 
 function closeSuggestions() {
@@ -104,6 +105,7 @@ function closeSuggestions() {
   elements.suggestions.innerHTML = "";
   elements.input.setAttribute("aria-expanded", "false");
   elements.input.removeAttribute("aria-activedescendant");
+  elements.form.classList.remove("suggestions-open");
 }
 
 function selectSuggestion(index) {
