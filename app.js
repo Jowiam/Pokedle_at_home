@@ -1,5 +1,5 @@
 const API_ROOT = "https://pokeapi.co/api/v2/pokemon";
-const MAX_POKEMON = 1025;
+const MAX_POKEMON = 386;
 const state = {
   allNames: [],
   allPokemon: [],
