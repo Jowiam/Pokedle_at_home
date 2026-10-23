@@ -1,0 +1,63 @@
+:root {
+  color-scheme: dark;
+  --background: #0d1220;
+  --surface: #171e30;
+  --surface-light: #202a40;
+  --text: #f7f9ff;
+  --muted: #9ba8c4;
+  --accent: #ffcb05;
+  --accent-dark: #cf9d00;
+  --exact: #2ecf8b;
+  --close: #f5a524;
+  --miss: #50607f;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  min-width: 320px;
+  background: radial-gradient(circle at 50% -10%, #273659 0, var(--background) 46%);
+  color: var(--text);
+}
+.shell { width: min(960px, calc(100% - 32px)); margin: 0 auto; padding: 54px 0 28px; }
+.hero, .card-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; }
+.eyebrow { color: var(--accent); font-size: .72rem; font-weight: 800; letter-spacing: .16em; margin: 0 0 9px; }
+h1 { font-size: clamp(2.5rem, 7vw, 4.5rem); letter-spacing: -.07em; line-height: .9; margin: 0; }
+h1 span { color: var(--accent); }
+.subtitle { color: var(--muted); font-size: 1rem; margin: 18px 0 34px; }
+h2 { font-size: clamp(1.5rem, 3vw, 2rem); letter-spacing: -.035em; margin: 0; }
+.game-card { background: color-mix(in srgb, var(--surface) 92%, transparent); border: 1px solid #2a3651; border-radius: 24px; box-shadow: 0 25px 70px #05081180; padding: clamp(20px, 5vw, 40px); }
+.card-heading { align-items: center; }
+.streak { background: #242f49; border-radius: 14px; min-width: 72px; padding: 9px 12px; text-align: center; }
+.streak strong { color: var(--accent); display: block; font-size: 1.4rem; }
+.streak span { color: var(--muted); font-size: .7rem; }
+.secondary-button, .primary-button { border: 0; border-radius: 10px; cursor: pointer; font: inherit; font-weight: 800; transition: transform .15s, filter .15s; }
+.secondary-button { background: #26324d; color: var(--text); padding: 12px 17px; }
+.primary-button { background: var(--accent); color: #16181f; padding: 13px 25px; }
+.secondary-button:hover, .primary-button:hover { filter: brightness(1.12); transform: translateY(-1px); }
+.guess-form { margin-top: 32px; }
+.guess-form label { color: var(--muted); display: block; font-size: .82rem; font-weight: 700; margin-bottom: 8px; }
+.input-row { display: flex; gap: 10px; }
+input { background: #0d1424; border: 1px solid #354361; border-radius: 10px; color: var(--text); flex: 1; font: inherit; outline: none; padding: 13px 15px; }
+input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px #ffcb0525; }
+button:disabled, input:disabled { cursor: not-allowed; opacity: .55; }
+.status { background: #111a2b; border-radius: 10px; color: var(--muted); margin-top: 22px; padding: 12px 14px; }
+.status.success { color: var(--exact); }
+.status.error { color: #ff8585; }
+.legend { color: var(--muted); display: flex; font-size: .76rem; gap: 18px; margin: 30px 0 12px; }
+.dot { border-radius: 50%; display: inline-block; height: 8px; margin-right: 4px; width: 8px; }
+.exact { background: var(--exact); } .close { background: var(--close); } .miss { background: var(--miss); }
+.table-wrap { overflow-x: auto; }
+table { border-collapse: collapse; min-width: 650px; width: 100%; }
+th { color: var(--muted); font-size: .7rem; letter-spacing: .09em; padding: 11px 10px; text-align: left; text-transform: uppercase; }
+td { border-top: 1px solid #29354e; font-size: .9rem; padding: 14px 10px; white-space: nowrap; }
+td:first-child { font-weight: 800; }
+#empty-state td { color: var(--muted); padding: 35px 10px; text-align: center; }
+.clue { border-radius: 7px; display: inline-block; min-width: 48px; padding: 5px 7px; text-align: center; }
+.clue.exact { background: #1e5d49; color: #a8ffda; } .clue.close { background: #674b1a; color: #ffd98a; } .clue.miss { background: #293650; color: #bac5db; }
+.pokemon-cell { align-items: center; display: flex; gap: 9px; }
+.pokemon-cell img { background: #26324d; border-radius: 50%; height: 38px; width: 38px; }
+footer { color: var(--muted); display: flex; font-size: .75rem; justify-content: space-between; margin: 18px 4px; }
+footer a { color: var(--accent); }
+@media (max-width: 560px) { .shell { padding-top: 30px; } .hero { display: block; } .secondary-button { margin-bottom: 20px; } .input-row { flex-direction: column; } .primary-button { width: 100%; } }

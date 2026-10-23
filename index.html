@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#121827" />
+    <title>PokeGuess - Unlimited Pokémon</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <header class="hero">
+        <div>
+          <p class="eyebrow">UNLIMITED MODE</p>
+          <h1>Poke<span>Guess</span></h1>
+          <p class="subtitle">Find the Pokémon from the clues. Start a new round whenever you want.</p>
+        </div>
+        <button id="new-game" class="secondary-button" type="button">New game</button>
+      </header>
+
+      <section class="game-card" aria-labelledby="game-heading">
+        <div class="card-heading">
+          <div>
+            <p class="eyebrow">ROUND <span id="round-number">1</span></p>
+            <h2 id="game-heading">Who is this Pokémon?</h2>
+          </div>
+          <div class="streak" aria-label="Current streak">
+            <strong id="streak">0</strong>
+            <span>streak</span>
+          </div>
+        </div>
+
+        <div id="status" class="status" role="status">Loading Pokémon data...</div>
+
+        <form id="guess-form" class="guess-form" autocomplete="off">
+          <label for="guess-input">Your guess</label>
+          <div class="input-row">
+            <input id="guess-input" name="guess" list="pokemon-list" placeholder="e.g. Pikachu" disabled />
+            <button id="guess-button" class="primary-button" type="submit" disabled>Guess</button>
+          </div>
+          <datalist id="pokemon-list"></datalist>
+        </form>
+
+        <div class="legend" aria-label="Clue legend">
+          <span><i class="dot exact"></i> exact</span>
+          <span><i class="dot close"></i> close</span>
+          <span><i class="dot miss"></i> different</span>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">Pokémon</th>
+                <th scope="col">Gen.</th>
+                <th scope="col">Type</th>
+                <th scope="col">Height</th>
+                <th scope="col">Weight</th>
+                <th scope="col">Stats</th>
+              </tr>
+            </thead>
+            <tbody id="guesses">
+              <tr id="empty-state">
+                <td colspan="6">Your guesses will appear here.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <footer>
+        <span id="round-count">0 rounds played</span>
+        <span>Data from <a href="https://pokeapi.co/" target="_blank" rel="noreferrer">PokéAPI</a></span>
+      </footer>
+    </main>
+    <script src="app.js"></script>
+  </body>
+</html>
