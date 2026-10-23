@@ -1,4 +1,4 @@
-# PokeGuess
+# Pokedle at home
 
 An unlimited browser-based Pokémon guessing game inspired by the clue-based
 format of Pokedle. Each round is randomly selected, so players can start a

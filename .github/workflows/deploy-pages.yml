@@ -1,4 +1,4 @@
-name: Deploy PokeGuess to GitHub Pages
+name: Deploy Pokedle at home to GitHub Pages
 
 on:
   push:

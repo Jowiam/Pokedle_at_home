@@ -1,4 +1,4 @@
-"""Local development server for the PokeGuess browser game."""
+"""Local development server for the Pokedle at home browser game."""
 
 from __future__ import annotations
 
@@ -25,13 +25,13 @@ def main() -> None:
     )
     server = GameServer((HOST, PORT), handler)
     url = f"http://{HOST}:{PORT}/index.html"
-    print(f"PokeGuess is running at {url}")
+    print(f"Pokedle at home is running at {url}")
     print("Press Ctrl+C to stop the server.")
     webbrowser.open(url)
     try:
         server.serve_forever()
     except KeyboardInterrupt:
-        print("\nStopping PokeGuess.")
+        print("\nStopping Pokedle at home.")
     finally:
         server.server_close()
 
