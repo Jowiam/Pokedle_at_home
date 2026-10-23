@@ -90,6 +90,17 @@ async function getSpecies(name) {
   return species;
 }
 
+async function getEvolutionChain(url) {
+  const cacheKey = `evolution-chain:${url}`;
+  const cached = sessionStorage.getItem(cacheKey);
+  if (cached) return JSON.parse(cached);
+  const response = await fetch(url);
+  if (!response.ok) throw new Error("Fant ikke evolusjonsdataene.");
+  const chain = await response.json();
+  sessionStorage.setItem(cacheKey, JSON.stringify(chain));
+  return chain;
+}
+
 const habitatNames = {
   cave: "Cave",
   forest: "Forest",
@@ -104,6 +115,15 @@ const habitatNames = {
 
 function habitatName(species) {
   return habitatNames[species.habitat?.name] || "Unknown";
+}
+
+function evolutionStage(chain, pokemonName, stage = 1) {
+  if (chain.species.name === pokemonName) return Math.min(stage, 3);
+  for (const evolution of chain.evolves_to) {
+    const result = evolutionStage(evolution, pokemonName, stage + 1);
+    if (result) return result;
+  }
+  return 0;
 }
 
 function compareNumber(value, target, tolerance) {
@@ -147,12 +167,23 @@ async function addGuess(pokemon) {
     getSpecies(pokemon.name),
     getSpecies(state.target.name),
   ]);
+  const [guessChain, targetChain] = await Promise.all([
+    getEvolutionChain(guessSpecies.evolution_chain.url),
+    getEvolutionChain(targetSpecies.evolution_chain.url),
+  ]);
   const targetTypes = state.target.types.map((entry) => entry.type.name);
   const types = pokemon.types.map((entry) => entry.type.name);
   const firstType = types[0] || "none";
   const secondType = types[1] || "none";
   const habitat = habitatName(guessSpecies);
   const targetHabitat = habitatName(targetSpecies);
+  const stage = evolutionStage(guessChain.chain, pokemon.name);
+  const targetStage = evolutionStage(targetChain.chain, state.target.name);
+  const stageComparison = compareNumber(stage, targetStage, 0);
+  const stageArrow = stageComparison.direction === "up" ? "↑" : stageComparison.direction === "down" ? "↓" : "";
+  const stageDirection = stageArrow
+    ? ` aria-label="Utviklingsstadium ${stage}; ${stageComparison.direction === "up" ? "tidligere" : "senere"} enn målet"`
+    : "";
   const row = document.createElement("tr");
   row.innerHTML = `
     <td>${titleCase(pokemon.name)}</td>
@@ -162,7 +193,8 @@ async function addGuess(pokemon) {
     <td>${clue(titleCase(secondType), compareType(types[1], targetTypes, 1))}</td>
     <td>${numberClue(`${pokemon.height / 10} m`, pokemon.height, state.target.height, 3, "Høyde")}</td>
     <td>${numberClue(`${pokemon.weight / 10} kg`, pokemon.weight, state.target.weight, 30, "Vekt")}</td>
-    <td>${clue(habitat, habitat === targetHabitat ? "exact" : "miss")}</td>`;
+    <td>${clue(habitat, habitat === targetHabitat ? "exact" : "miss")}</td>
+    <td><span class="clue ${stageComparison.kind}"${stageDirection}>Stage ${stage}${stageArrow ? `<span class="direction" aria-hidden="true">${stageArrow}</span>` : ""}</span></td>`;
   elements.empty?.remove();
   elements.guesses.prepend(row);
 }
@@ -226,7 +258,7 @@ async function newGame() {
     state.round += 1;
     localStorage.setItem("pokeguess-round", state.round);
     elements.round.textContent = state.round;
-    elements.guesses.innerHTML = '<tr id="empty-state"><td colspan="8">Forslagene dine vises her.</td></tr>';
+    elements.guesses.innerHTML = '<tr id="empty-state"><td colspan="9">Forslagene dine vises her.</td></tr>';
     elements.input.value = "";
     elements.input.disabled = false;
     elements.button.disabled = false;
