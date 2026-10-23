@@ -1,50 +1,66 @@
 <!doctype html>
-<html lang="en">
+<html lang="no">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#121827" />
-    <title>PokeGuess - Unlimited Pokémon</title>
+    <title>PokeGjetter - Ubegrensede Pokémon</title>
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
     <main class="shell">
       <header class="hero">
         <div>
-          <p class="eyebrow">UNLIMITED MODE</p>
-          <h1>Poke<span>Guess</span></h1>
-          <p class="subtitle">Find the Pokémon from the clues. Start a new round whenever you want.</p>
+          <p class="eyebrow">UBEGRENSET MODUS</p>
+          <h1>Poke<span>Gjetter</span></h1>
+          <p class="subtitle">Finn Pokémonen ut fra ledetrådene. Start en ny runde når du vil.</p>
         </div>
-        <button id="new-game" class="secondary-button" type="button">New game</button>
+        <button id="new-game" class="secondary-button" type="button">Ny runde</button>
       </header>
 
       <section class="game-card" aria-labelledby="game-heading">
         <div class="card-heading">
           <div>
-            <p class="eyebrow">ROUND <span id="round-number">1</span></p>
-            <h2 id="game-heading">Who is this Pokémon?</h2>
+            <p class="eyebrow">RUNDE <span id="round-number">1</span></p>
+            <h2 id="game-heading">Hvilken Pokémon er dette?</h2>
           </div>
-          <div class="streak" aria-label="Current streak">
+          <div class="streak" aria-label="Nåværende rekke">
             <strong id="streak">0</strong>
-            <span>streak</span>
+            <span>på rad</span>
           </div>
         </div>
 
-        <div id="status" class="status" role="status">Loading Pokémon data...</div>
+        <div id="status" class="status" role="status">Laster inn Pokémon-data ...</div>
+
+        <fieldset class="generation-filter">
+          <legend>Velg generasjoner</legend>
+          <div id="generation-options" class="generation-options">
+            <label><input type="checkbox" value="1" checked /> Gen. 1</label>
+            <label><input type="checkbox" value="2" checked /> Gen. 2</label>
+            <label><input type="checkbox" value="3" checked /> Gen. 3</label>
+            <label><input type="checkbox" value="4" checked /> Gen. 4</label>
+            <label><input type="checkbox" value="5" checked /> Gen. 5</label>
+            <label><input type="checkbox" value="6" checked /> Gen. 6</label>
+            <label><input type="checkbox" value="7" checked /> Gen. 7</label>
+            <label><input type="checkbox" value="8" checked /> Gen. 8</label>
+            <label><input type="checkbox" value="9" checked /> Gen. 9</label>
+          </div>
+          <p class="filter-help">Velg én eller flere generasjoner for nye runder.</p>
+        </fieldset>
 
         <form id="guess-form" class="guess-form" autocomplete="off">
-          <label for="guess-input">Your guess</label>
+          <label for="guess-input">Ditt forslag</label>
           <div class="input-row">
-            <input id="guess-input" name="guess" list="pokemon-list" placeholder="e.g. Pikachu" disabled />
-            <button id="guess-button" class="primary-button" type="submit" disabled>Guess</button>
+            <input id="guess-input" name="guess" list="pokemon-list" placeholder="f.eks. Pikachu" disabled />
+            <button id="guess-button" class="primary-button" type="submit" disabled>Gjett</button>
           </div>
           <datalist id="pokemon-list"></datalist>
         </form>
 
         <div class="legend" aria-label="Clue legend">
-          <span><i class="dot exact"></i> correct</span>
-          <span><i class="dot close"></i> partial</span>
-          <span><i class="dot miss"></i> wrong</span>
+          <span><i class="dot exact"></i> riktig</span>
+          <span><i class="dot close"></i> delvis</span>
+          <span><i class="dot miss"></i> feil</span>
         </div>
 
         <div class="table-wrap">
@@ -52,17 +68,17 @@
             <thead>
               <tr>
                 <th scope="col">Pokémon</th>
-                <th scope="col">Gen.</th>
+                <th scope="col">Generasjon</th>
                 <th scope="col">Type 1</th>
                 <th scope="col">Type 2</th>
-                <th scope="col">Height</th>
-                <th scope="col">Weight</th>
-                <th scope="col">Stats</th>
+                <th scope="col">Høyde</th>
+                <th scope="col">Vekt</th>
+                <th scope="col">Statistikk</th>
               </tr>
             </thead>
             <tbody id="guesses">
               <tr id="empty-state">
-                <td colspan="7">Your guesses will appear here.</td>
+                <td colspan="7">Forslagene dine vises her.</td>
               </tr>
             </tbody>
           </table>
@@ -70,8 +86,8 @@
       </section>
 
       <footer>
-        <span id="round-count">0 rounds played</span>
-        <span>Data from <a href="https://pokeapi.co/" target="_blank" rel="noreferrer">PokéAPI</a></span>
+        <span id="round-count">0 runder spilt</span>
+        <span>Data fra <a href="https://pokeapi.co/" target="_blank" rel="noreferrer">PokéAPI</a></span>
       </footer>
     </main>
     <script src="app.js"></script>
