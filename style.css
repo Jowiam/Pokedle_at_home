@@ -8,8 +8,8 @@
   --accent: #ffcb05;
   --accent-dark: #cf9d00;
   --exact: #2ecf8b;
-  --close: #f5a524;
-  --miss: #50607f;
+  --close: #f5c542;
+  --miss: #ef6351;
   font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
@@ -55,7 +55,11 @@ td { border-top: 1px solid #29354e; font-size: .9rem; padding: 14px 10px; white-
 td:first-child { font-weight: 800; }
 #empty-state td { color: var(--muted); padding: 35px 10px; text-align: center; }
 .clue { border-radius: 7px; display: inline-block; min-width: 48px; padding: 5px 7px; text-align: center; }
-.clue.exact { background: #1e5d49; color: #a8ffda; } .clue.close { background: #674b1a; color: #ffd98a; } .clue.miss { background: #293650; color: #bac5db; }
+.clue { color: #101722; font-weight: 800; }
+.clue.exact { background: #2ecf8b; color: #071c16; }
+.clue.close { background: #f5c542; color: #2c2200; }
+.clue.miss { background: #ef6351; color: #2b0804; }
+.direction { display: inline-block; font-size: 1.15em; line-height: .7; margin-left: 7px; vertical-align: -1px; }
 .pokemon-cell { align-items: center; display: flex; gap: 9px; }
 .pokemon-cell img { background: #26324d; border-radius: 50%; height: 38px; width: 38px; }
 footer { color: var(--muted); display: flex; font-size: .75rem; justify-content: space-between; margin: 18px 4px; }

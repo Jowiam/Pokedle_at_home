@@ -60,8 +60,13 @@ async function getPokemon(name) {
 }
 
 function compareNumber(value, target, tolerance) {
-  if (value === target) return "exact";
-  return Math.abs(value - target) <= tolerance ? "close" : "miss";
+  const kind = value === target
+    ? "exact"
+    : Math.abs(value - target) <= tolerance
+      ? "close"
+      : "miss";
+  const direction = value < target ? "up" : value > target ? "down" : "";
+  return { kind, direction };
 }
 
 function compareTypes(types, targetTypes) {
@@ -74,6 +79,13 @@ function clue(value, kind) {
   return `<span class="clue ${kind}">${value}</span>`;
 }
 
+function numberClue(displayValue, comparisonValue, target, tolerance, label) {
+  const comparison = compareNumber(comparisonValue, target, tolerance);
+  const arrow = comparison.direction === "up" ? "↑" : comparison.direction === "down" ? "↓" : "";
+  const direction = arrow ? ` aria-label="${label}; ${comparison.direction}"` : "";
+  return `<span class="clue ${comparison.kind}"${direction}>${displayValue}${arrow ? `<span class="direction" aria-hidden="true">${arrow}</span>` : ""}</span>`;
+}
+
 function addGuess(pokemon) {
   const targetTypes = state.target.types.map((entry) => entry.type.name);
   const types = pokemon.types.map((entry) => entry.type.name);
@@ -84,9 +96,9 @@ function addGuess(pokemon) {
     <td><span class="pokemon-cell"><img src="${pokemon.sprites.front_default || ""}" alt="" />${titleCase(pokemon.name)}</span></td>
     <td>${clue(`Gen ${generation(pokemon.id)}`, generation(pokemon.id) === generation(state.target.id) ? "exact" : "miss")}</td>
     <td>${clue(types.join(" / "), compareTypes(types, targetTypes))}</td>
-    <td>${clue(`${pokemon.height / 10} m`, compareNumber(pokemon.height, state.target.height, 3))}</td>
-    <td>${clue(`${pokemon.weight / 10} kg`, compareNumber(pokemon.weight, state.target.weight, 30))}</td>
-    <td>${clue(total, compareNumber(total, targetTotal, 40))}</td>`;
+    <td>${numberClue(`${pokemon.height / 10} m`, pokemon.height, state.target.height, 3, "Height")}</td>
+    <td>${numberClue(`${pokemon.weight / 10} kg`, pokemon.weight, state.target.weight, 30, "Weight")}</td>
+    <td>${clue(total, compareNumber(total, targetTotal, 40).kind)}</td>`;
   elements.empty?.remove();
   elements.guesses.prepend(row);
 }
@@ -130,20 +142,28 @@ async function submitGuess(event) {
   }
 }
 
-function newGame() {
+async function newGame() {
   if (!state.names.length) return;
-  state.target = state.names[Math.floor(Math.random() * state.names.length)];
-  state.guesses = [];
-  state.locked = false;
-  state.round += 1;
-  localStorage.setItem("pokeguess-round", state.round);
-  elements.round.textContent = state.round;
-  elements.guesses.innerHTML = '<tr id="empty-state"><td colspan="6">Your guesses will appear here.</td></tr>';
-  elements.input.value = "";
-  elements.input.disabled = false;
-  elements.button.disabled = false;
-  setStatus("A fresh Pokémon is ready. Good luck!");
-  elements.input.focus();
+  elements.input.disabled = true;
+  elements.button.disabled = true;
+  setStatus("Preparing a fresh Pokémon...");
+  try {
+    const targetName = state.names[Math.floor(Math.random() * state.names.length)];
+    state.target = await getPokemon(targetName);
+    state.guesses = [];
+    state.locked = false;
+    state.round += 1;
+    localStorage.setItem("pokeguess-round", state.round);
+    elements.round.textContent = state.round;
+    elements.guesses.innerHTML = '<tr id="empty-state"><td colspan="6">Your guesses will appear here.</td></tr>';
+    elements.input.value = "";
+    elements.input.disabled = false;
+    elements.button.disabled = false;
+    setStatus("A fresh Pokémon is ready. Good luck!");
+    elements.input.focus();
+  } catch (error) {
+    setStatus(`Could not prepare a new round: ${error.message}`, "error");
+  }
 }
 
 async function start() {
@@ -156,7 +176,7 @@ async function start() {
     const data = await response.json();
     state.names = data.results.map((pokemon) => pokemon.name);
     elements.list.innerHTML = state.names.map((name) => `<option value="${titleCase(name)}"></option>`).join("");
-    newGame();
+    await newGame();
   } catch (error) {
     setStatus(`${error.message} Check your connection and refresh the page.`, "error");
   }
