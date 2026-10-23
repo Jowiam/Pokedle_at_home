@@ -26,6 +26,7 @@ const elements = {
   streak: document.querySelector("#streak"),
   rounds: document.querySelector("#round-count"),
   newGame: document.querySelector("#new-game"),
+  pageRefresh: document.querySelector("#page-refresh"),
   winBanner: document.querySelector("#win-banner"),
   winMessage: document.querySelector("#win-message"),
   winNewGame: document.querySelector("#win-new-game"),
@@ -392,6 +393,7 @@ elements.input.addEventListener("keydown", (event) => {
 
 elements.form.addEventListener("submit", submitGuess);
 elements.newGame.addEventListener("click", newGame);
+elements.pageRefresh.addEventListener("click", () => window.location.reload());
 elements.winNewGame.addEventListener("click", newGame);
 elements.generationOptions.addEventListener("change", async () => {
   if (updatePokemonPool()) {
