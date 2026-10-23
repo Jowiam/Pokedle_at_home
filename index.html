@@ -52,10 +52,23 @@
         <form id="guess-form" class="guess-form" autocomplete="off">
           <label for="guess-input">Ditt forslag</label>
           <div class="input-row">
-            <input id="guess-input" name="guess" list="pokemon-list" placeholder="f.eks. Pikachu" disabled />
+            <div class="suggestion-box">
+              <input
+                id="guess-input"
+                name="guess"
+                placeholder="f.eks. Pikachu"
+                role="combobox"
+                aria-autocomplete="list"
+                aria-controls="pokemon-suggestions"
+                aria-expanded="false"
+                aria-haspopup="listbox"
+                autocomplete="off"
+                disabled
+              />
+              <div id="pokemon-suggestions" class="suggestions" role="listbox" hidden></div>
+            </div>
             <button id="guess-button" class="primary-button" type="submit" disabled>Gjett</button>
           </div>
-          <datalist id="pokemon-list"></datalist>
         </form>
 
         <div class="legend" aria-label="Clue legend">

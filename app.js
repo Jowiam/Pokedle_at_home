@@ -4,6 +4,8 @@ const state = {
   allNames: [],
   allPokemon: [],
   names: [],
+  suggestions: [],
+  activeSuggestion: -1,
   target: null,
   guesses: [],
   round: Number(localStorage.getItem("pokeguess-round") || 1),
@@ -16,7 +18,7 @@ const elements = {
   form: document.querySelector("#guess-form"),
   input: document.querySelector("#guess-input"),
   button: document.querySelector("#guess-button"),
-  list: document.querySelector("#pokemon-list"),
+  suggestions: document.querySelector("#pokemon-suggestions"),
   guesses: document.querySelector("#guesses"),
   empty: document.querySelector("#empty-state"),
   status: document.querySelector("#status"),
@@ -54,10 +56,76 @@ function selectedGenerations() {
 function updatePokemonPool() {
   const selected = selectedGenerations();
   state.names = state.allNames.filter((name) => selected.includes(generationFromName(name)));
-  elements.list.innerHTML = state.names
-    .map((name) => `<option value="${titleCase(name)}"></option>`)
-    .join("");
+  closeSuggestions();
   return selected.length > 0;
+}
+
+function pokemonIconUrl(pokemon) {
+  const id = pokemon.url.split("/").filter(Boolean).pop();
+  return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`;
+}
+
+function renderSuggestions() {
+  const query = elements.input.value.trim().toLowerCase().replaceAll(" ", "-");
+  state.suggestions = state.names
+    .filter((name) => !query || name.includes(query))
+    .slice(0, 12);
+  state.activeSuggestion = -1;
+  elements.suggestions.innerHTML = "";
+
+  state.suggestions.forEach((name, index) => {
+    const pokemon = state.allPokemon.find((entry) => entry.name === name);
+    const option = document.createElement("div");
+    option.className = "suggestion";
+    option.id = `pokemon-suggestion-${name}`;
+    option.setAttribute("role", "option");
+    option.setAttribute("aria-selected", "false");
+    option.dataset.name = name;
+    option.innerHTML = `<img src="${pokemonIconUrl(pokemon)}" alt="" aria-hidden="true" />`;
+    const label = document.createElement("span");
+    label.textContent = titleCase(name);
+    option.append(label);
+    option.addEventListener("pointerdown", (event) => {
+      event.preventDefault();
+      selectSuggestion(index);
+    });
+    elements.suggestions.append(option);
+  });
+
+  const hasSuggestions = state.suggestions.length > 0 && !elements.input.disabled;
+  elements.suggestions.hidden = !hasSuggestions;
+  elements.input.setAttribute("aria-expanded", String(hasSuggestions));
+}
+
+function closeSuggestions() {
+  state.suggestions = [];
+  state.activeSuggestion = -1;
+  elements.suggestions.hidden = true;
+  elements.suggestions.innerHTML = "";
+  elements.input.setAttribute("aria-expanded", "false");
+  elements.input.removeAttribute("aria-activedescendant");
+}
+
+function selectSuggestion(index) {
+  const name = state.suggestions[index];
+  if (!name) return;
+  elements.input.value = titleCase(name);
+  closeSuggestions();
+  elements.input.focus();
+}
+
+function moveSuggestion(step) {
+  if (elements.suggestions.hidden) renderSuggestions();
+  if (!state.suggestions.length) return;
+  state.activeSuggestion = (state.activeSuggestion + step + state.suggestions.length) % state.suggestions.length;
+  [...elements.suggestions.children].forEach((option, index) => {
+    const active = index === state.activeSuggestion;
+    option.classList.toggle("active", active);
+    option.setAttribute("aria-selected", String(active));
+  });
+  const activeOption = elements.suggestions.children[state.activeSuggestion];
+  elements.input.setAttribute("aria-activedescendant", activeOption.id);
+  activeOption.scrollIntoView({ block: "nearest" });
 }
 
 function generationFromName(name) {
@@ -260,6 +328,7 @@ async function newGame() {
   }
   elements.input.disabled = true;
   elements.button.disabled = true;
+  closeSuggestions();
   setStatus("Gjør klar en ny Pokémon ...");
   try {
     const targetName = state.names[Math.floor(Math.random() * state.names.length)];
@@ -298,6 +367,26 @@ async function start() {
     setStatus(`${error.message} Sjekk internettilkoblingen og last inn siden på nytt.`, "error");
   }
 }
+
+elements.input.addEventListener("focus", renderSuggestions);
+elements.input.addEventListener("input", renderSuggestions);
+elements.input.addEventListener("blur", () => {
+  window.setTimeout(closeSuggestions, 0);
+});
+elements.input.addEventListener("keydown", (event) => {
+  if (event.key === "ArrowDown") {
+    event.preventDefault();
+    moveSuggestion(1);
+  } else if (event.key === "ArrowUp") {
+    event.preventDefault();
+    moveSuggestion(-1);
+  } else if (event.key === "Enter" && !elements.suggestions.hidden && state.activeSuggestion >= 0) {
+    event.preventDefault();
+    selectSuggestion(state.activeSuggestion);
+  } else if (event.key === "Escape") {
+    closeSuggestions();
+  }
+});
 
 elements.form.addEventListener("submit", submitGuess);
 elements.newGame.addEventListener("click", newGame);
