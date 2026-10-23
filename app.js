@@ -69,10 +69,6 @@ function generation(id) {
   return 9;
 }
 
-function statTotal(pokemon) {
-  return pokemon.stats.reduce((sum, stat) => sum + stat.base_stat, 0);
-}
-
 async function getPokemon(name) {
   const cached = sessionStorage.getItem(`pokemon:${name}`);
   if (cached) return JSON.parse(cached);
@@ -81,6 +77,33 @@ async function getPokemon(name) {
   const pokemon = await response.json();
   sessionStorage.setItem(`pokemon:${name}`, JSON.stringify(pokemon));
   return pokemon;
+}
+
+async function getSpecies(name) {
+  const cacheKey = `species:${name}`;
+  const cached = sessionStorage.getItem(cacheKey);
+  if (cached) return JSON.parse(cached);
+  const response = await fetch(`https://pokeapi.co/api/v2/pokemon-species/${name}`);
+  if (!response.ok) throw new Error("Fant ikke habitatet til denne Pokémonen.");
+  const species = await response.json();
+  sessionStorage.setItem(cacheKey, JSON.stringify(species));
+  return species;
+}
+
+const habitatNames = {
+  cave: "Cave",
+  forest: "Forest",
+  grassland: "Grassland",
+  mountain: "Mountain",
+  rare: "Rare",
+  "rough-terrain": "Rough-terrain",
+  sea: "Sea",
+  urban: "Urban",
+  "waters-edge": "Waters-edge",
+};
+
+function habitatName(species) {
+  return habitatNames[species.habitat?.name] || "Unknown";
 }
 
 function compareNumber(value, target, tolerance) {
@@ -119,13 +142,17 @@ function generationClue(value, target) {
   return `<span class="clue ${comparison.kind}"${direction}>Gen. ${value}${arrow ? `<span class="direction" aria-hidden="true">${arrow}</span>` : ""}</span>`;
 }
 
-function addGuess(pokemon) {
+async function addGuess(pokemon) {
+  const [guessSpecies, targetSpecies] = await Promise.all([
+    getSpecies(pokemon.name),
+    getSpecies(state.target.name),
+  ]);
   const targetTypes = state.target.types.map((entry) => entry.type.name);
   const types = pokemon.types.map((entry) => entry.type.name);
   const firstType = types[0] || "none";
   const secondType = types[1] || "none";
-  const total = statTotal(pokemon);
-  const targetTotal = statTotal(state.target);
+  const habitat = habitatName(guessSpecies);
+  const targetHabitat = habitatName(targetSpecies);
   const row = document.createElement("tr");
   row.innerHTML = `
     <td><span class="pokemon-cell"><img src="${pokemon.sprites.front_default || ""}" alt="" />${titleCase(pokemon.name)}</span></td>
@@ -134,7 +161,7 @@ function addGuess(pokemon) {
     <td>${clue(titleCase(secondType), compareType(types[1], targetTypes, 1))}</td>
     <td>${numberClue(`${pokemon.height / 10} m`, pokemon.height, state.target.height, 3, "Høyde")}</td>
     <td>${numberClue(`${pokemon.weight / 10} kg`, pokemon.weight, state.target.weight, 30, "Vekt")}</td>
-    <td>${clue(total, compareNumber(total, targetTotal, 40).kind)}</td>`;
+    <td>${clue(habitat, habitat === targetHabitat ? "exact" : "miss")}</td>`;
   elements.empty?.remove();
   elements.guesses.prepend(row);
 }
@@ -167,7 +194,7 @@ async function submitGuess(event) {
   try {
     const pokemon = await getPokemon(name);
     state.guesses.push(name);
-    addGuess(pokemon);
+    await addGuess(pokemon);
     elements.input.value = "";
     if (pokemon.name === state.target.name) {
       setStatus(`Riktig! Det var ${titleCase(state.target.name)}. Start en ny runde når du vil.`, "success");
