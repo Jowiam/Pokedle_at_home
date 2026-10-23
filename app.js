@@ -22,9 +22,7 @@ const elements = {
   guesses: document.querySelector("#guesses"),
   empty: document.querySelector("#empty-state"),
   status: document.querySelector("#status"),
-  round: document.querySelector("#round-number"),
   streak: document.querySelector("#streak"),
-  rounds: document.querySelector("#round-count"),
   newGame: document.querySelector("#new-game"),
   pageRefresh: document.querySelector("#page-refresh"),
   winBanner: document.querySelector("#win-banner"),
@@ -289,7 +287,6 @@ function finish(won) {
   elements.input.disabled = true;
   elements.button.disabled = true;
   elements.streak.textContent = state.streak;
-  elements.rounds.textContent = `${state.played} ${state.played === 1 ? "runde" : "runder"} spilt`;
 }
 
 async function submitGuess(event) {
@@ -340,7 +337,6 @@ async function newGame() {
     state.locked = false;
     state.round += 1;
     localStorage.setItem("pokeguess-round", state.round);
-    elements.round.textContent = state.round;
     elements.guesses.innerHTML = '<tr id="empty-state"><td colspan="9">Forslagene dine vises her.</td></tr>';
     elements.winBanner.hidden = true;
     elements.winBanner.classList.remove("celebrate");
@@ -355,9 +351,7 @@ async function newGame() {
 }
 
 async function start() {
-  elements.round.textContent = state.round;
   elements.streak.textContent = state.streak;
-  elements.rounds.textContent = `${state.played} ${state.played === 1 ? "runde" : "runder"} spilt`;
   try {
     const response = await fetch(`${API_ROOT}?limit=${MAX_POKEMON}`);
     if (!response.ok) throw new Error("PokéAPI er ikke tilgjengelig akkurat nå.");
